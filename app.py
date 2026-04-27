@@ -39,6 +39,25 @@ def dashboard():
     if not session.get('logged_in'):
         return redirect('/login')
     return "Dashboard (we will build more here)"
+@app.route('/student/<int:student_id>')
+def student_results(student_id):
+    if not session.get('logged_in'):
+        return redirect('/login')
 
+    db = get_db()
+    results = db.execute(
+        "SELECT quiz_id, score FROM results WHERE student_id = ?",
+        (student_id,)
+    ).fetchall()
+
+    if not results:
+        return "<h1>No Results</h1><br><a href='/dashboard'>Back</a>"
+
+    return f"""
+    <h1>Student Results</h1>
+    {results}
+    <br><br>
+    <a href='/dashboard'>Back</a>
+    """
 if __name__ == '__main__':
     app.run(debug=True)
